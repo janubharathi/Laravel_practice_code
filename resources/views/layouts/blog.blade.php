@@ -11,7 +11,21 @@
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="{{ route('posts.index') }}">Blog App</a>
-        <a class="btn btn-outline-light btn-sm" href="{{ route('posts.create') }}">+ New Post</a>
+
+        <div class="d-flex gap-2 align-items-center">
+            @auth
+                <span class="text-light small">Hi, {{ auth()->user()->name }}</span>
+                <a class="btn btn-outline-light btn-sm" href="{{ route('posts.create') }}">+ New Post</a>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-danger btn-sm">Logout</button>
+                </form>
+            @else
+                <a class="btn btn-outline-light btn-sm" href="{{ route('login') }}">Login</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('register') }}">Register</a>
+            @endauth
+        </div>
     </div>
 </nav>
 
