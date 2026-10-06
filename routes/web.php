@@ -8,7 +8,13 @@ Route::get('/', function () {
     return redirect()->route('posts.index');
 });
 
-Route::resource('posts', PostController::class);
+// Logged-in only: create, store, edit, update, destroy
+Route::middleware('auth')->group(function () {
+    Route::resource('posts', PostController::class)->except(['index', 'show']);
+});
+
+// Public: anyone can read
+Route::resource('posts', PostController::class)->only(['index', 'show']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');

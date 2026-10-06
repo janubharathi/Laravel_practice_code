@@ -17,7 +17,9 @@
                 </a>
             </h5>
             <p class="card-text text-muted">{{ Str::limit($post->body, 120) }}</p>
-            <small class="text-secondary">{{ $post->created_at->diffForHumans() }}</small>
+            <small class="text-secondary">
+                By {{ $post->user->name ?? 'Unknown' }} · {{ $post->created_at->diffForHumans() }}
+            </small>
         </div>
     </div>
 @empty
