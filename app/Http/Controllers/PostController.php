@@ -5,12 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['category', 'user'])->latest()->get();
+        $posts = Post::with(['category', 'user'])
+            ->when($request->search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(6)
+            ->withQueryString();
+
         return view('posts.index', compact('posts'));
     }
 
@@ -22,7 +31,15 @@ class PostController extends Controller
 
     public function store(PostRequest $request)
     {
-        $request->user()->posts()->create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        } else {
+            unset($data['image']);
+        }
+
+        $request->user()->posts()->create($data);
 
         return redirect()->route('posts.index')->with('success', 'Post created!');
     }
@@ -44,7 +61,18 @@ class PostController extends Controller
     {
         abort_unless($post->user_id === auth()->id(), 403);
 
-        $post->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        } else {
+            unset($data['image']);
+        }
+
+        $post->update($data);
 
         return redirect()->route('posts.show', $post)->with('success', 'Post updated!');
     }
@@ -52,6 +80,10 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         abort_unless($post->user_id === auth()->id(), 403);
+
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
 
         $post->delete();
 

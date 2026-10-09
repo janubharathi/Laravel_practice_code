@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="card shadow-sm">
+    @if($post->image)
+        <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top"
+             style="max-height: 400px; object-fit: cover;" alt="{{ $post->title }}">
+    @endif
+
     <div class="card-body">
         <span class="badge bg-primary mb-2">
             {{ $post->category->name ?? 'Uncategorized' }}

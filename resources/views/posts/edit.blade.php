@@ -7,7 +7,7 @@
     <div class="card-body">
         <h1 class="h4 mb-3">Edit Post</h1>
 
-        <form method="POST" action="{{ route('posts.update', $post) }}">
+        <form method="POST" action="{{ route('posts.update', $post) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -31,6 +31,20 @@
                     @endforeach
                 </select>
                 @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Image</label>
+                @if($post->image)
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $post->image) }}" alt="Current image"
+                             class="img-thumbnail" style="max-height: 150px;">
+                        <div class="form-text">Choose a new file only if you want to replace this one.</div>
+                    </div>
+                @endif
+                <input type="file" name="image" accept="image/*"
+                       class="form-control @error('image') is-invalid @enderror">
+                @error('image') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
