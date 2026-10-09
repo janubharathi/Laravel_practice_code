@@ -3,16 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        Category::insert([
-            ['name' => 'Tech',      'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Travel',    'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Lifestyle', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        foreach (['Tech', 'Travel', 'Lifestyle'] as $name){
+            Category::firstOrCreate(['name' => $name]);
+        }
+        Post::factory(20)->create();
     }
 }
